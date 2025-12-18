@@ -1,29 +1,29 @@
 function duffing_poincare_fixedpoints_nox_fmt
-% Поиск фикс-точек Poincar? (t=0, T=2?) и их мультипликаторов
-% БЕЗ Optimization Toolbox. Формат вывода: 5 знаков после запятой, комплексные полностью.
+% РџРѕРёСЃРє С„РёРєСЃ-С‚РѕС‡РµРє PoincarГ© (t=0, T=2ПЂ) Рё РёС… РјСѓР»СЊС‚РёРїР»РёРєР°С‚РѕСЂРѕРІ
+% Р‘Р•Р— Optimization Toolbox. Р¤РѕСЂРјР°С‚ РІС‹РІРѕРґР°: 5 Р·РЅР°РєРѕРІ РїРѕСЃР»Рµ Р·Р°РїСЏС‚РѕР№, РєРѕРјРїР»РµРєСЃРЅС‹Рµ РїРѕР»РЅРѕСЃС‚СЊСЋ.
 
-% -------- параметры модели --------
+% -------- РїР°СЂР°РјРµС‚СЂС‹ РјРѕРґРµР»Рё --------
 p1 = 0.9;
 p2 = 0.522;
 T  = 2*pi; t0 = 0;
 
-% -------- численные настройки --------
-optsODE_fast = odeset('AbsTol',1e-7,'RelTol',1e-5,'MaxStep',0.25); % PASS 1 (быстро)
-optsODE_ref  = odeset('AbsTol',1e-10,'RelTol',1e-8,'MaxStep',0.05); % PASS 2 (точно)
+% -------- С‡РёСЃР»РµРЅРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё --------
+optsODE_fast = odeset('AbsTol',1e-7,'RelTol',1e-5,'MaxStep',0.25); % PASS 1 (Р±С‹СЃС‚СЂРѕ)
+optsODE_ref  = odeset('AbsTol',1e-10,'RelTol',1e-8,'MaxStep',0.05); % PASS 2 (С‚РѕС‡РЅРѕ)
 
 newton_tol   = 1e-6;    % PASS 1
 newton_tol2  = 1e-9;    % PASS 2
 newton_itmax = 40;
 armijo_c     = 1e-4;
 
-% стартовая сетка (сфокусировано)
+% СЃС‚Р°СЂС‚РѕРІР°СЏ СЃРµС‚РєР° (СЃС„РѕРєСѓСЃРёСЂРѕРІР°РЅРѕ)
 xs = [-1.6 -1.3 -1.1 -0.9 -0.7  -0.2  0  0.2  0.7 0.9 1.1 1.3 1.6];
 ys = linspace(-0.6,0.6,10);
 [XX,YY] = ndgrid(xs,ys);
 starts = [XX(:) YY(:)];
 
-tol_merge  = 1e-4;  % PASS 1 склейка
-tol_merge2 = 5e-5;  % финальная склейка
+tol_merge  = 1e-4;  % PASS 1 СЃРєР»РµР№РєР°
+tol_merge2 = 5e-5;  % С„РёРЅР°Р»СЊРЅР°СЏ СЃРєР»РµР№РєР°
 
 % -------- PASS 1 --------
 Z = [];
@@ -37,7 +37,7 @@ for k=1:size(starts,1)
     end
 end
 if isempty(Z)
-    fprintf('PASS 1: ничего не найдено. Расширьте xs/ys или ослабьте допуски.\n');
+    fprintf('PASS 1: РЅРёС‡РµРіРѕ РЅРµ РЅР°Р№РґРµРЅРѕ. Р Р°СЃС€РёСЂСЊС‚Рµ xs/ys РёР»Рё РѕСЃР»Р°Р±СЊС‚Рµ РґРѕРїСѓСЃРєРё.\n');
     return
 end
 
@@ -52,13 +52,13 @@ for i = 1:size(Z,1)
         Zsym_add = [Zsym_add; z2(:).'];    %#ok<AGROW>
     end
 end
-% слить и удалить дубли
+% СЃР»РёС‚СЊ Рё СѓРґР°Р»РёС‚СЊ РґСѓР±Р»Рё
 Z = dedupe_fixpoints([Z; Zsym_add], tol_merge2);
 
-% -------- PASS 2 + печать с форматом --------
-fprintf('Найдено кандидатов после PASS 1: %d\n', size(Z,1));
+% -------- PASS 2 + РїРµС‡Р°С‚СЊ СЃ С„РѕСЂРјР°С‚РѕРј --------
+fprintf('РќР°Р№РґРµРЅРѕ РєР°РЅРґРёРґР°С‚РѕРІ РїРѕСЃР»Рµ PASS 1: %d\n', size(Z,1));
 fprintf('%3s  %10s %10s   %12s          %26s        %15s   %s\n', ...
-        '#','x','y','||P(z)-z||','eigs(?1, ?2)','|?1|, |?2|','Type');
+        '#','x','y','||P(z)-z||','eigs(О»1, О»2)','|О»1|, |О»2|','Type');
 
 for i=1:size(Z,1)
     zinit = Z(i,:).';
@@ -68,11 +68,11 @@ for i=1:size(Z,1)
     ev     = eig(DP);
     mods   = abs(ev).';
 
-    % форматированные строки
+    % С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРЅС‹Рµ СЃС‚СЂРѕРєРё
     zxs = sprintf('%.5f', z(1));
     zys = sprintf('%.5f', z(2));
-    ress = sprintf('%.5e', norm(F));                 % маленькие числа удобнее в e-формате
-    lam1s = cplx5(ev(1));                            % комплекс полностью с 5 знаками
+    ress = sprintf('%.5e', norm(F));                 % РјР°Р»РµРЅСЊРєРёРµ С‡РёСЃР»Р° СѓРґРѕР±РЅРµРµ РІ e-С„РѕСЂРјР°С‚Рµ
+    lam1s = cplx5(ev(1));                            % РєРѕРјРїР»РµРєСЃ РїРѕР»РЅРѕСЃС‚СЊСЋ СЃ 5 Р·РЅР°РєР°РјРё
     lam2s = cplx5(ev(2));
     mod1s = sprintf('%.5f', mods(1));
     mod2s = sprintf('%.5f', mods(2));
@@ -83,15 +83,15 @@ for i=1:size(Z,1)
 end
 end
 
-% ===================== вспомогательные =====================
+% ===================== РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ =====================
 
 function s = cplx5(z)
-% Строка комплексного числа с 5 знаками после запятой: a+bi / a-bi
+% РЎС‚СЂРѕРєР° РєРѕРјРїР»РµРєСЃРЅРѕРіРѕ С‡РёСЃР»Р° СЃ 5 Р·РЅР°РєР°РјРё РїРѕСЃР»Рµ Р·Р°РїСЏС‚РѕР№: a+bi / a-bi
 s = sprintf('%.5f%+.5fi', real(z), imag(z));
 end
 
 function [F,J] = F_and_J(z, T, p1, p2, t0, opts)
-% За одну интеграцию: F(z)=P(z)-z и J = DP(z) - I
+% Р—Р° РѕРґРЅСѓ РёРЅС‚РµРіСЂР°С†РёСЋ: F(z)=P(z)-z Рё J = DP(z) - I
 z0  = [z(:); reshape(eye(2),4,1)];
 ode = @(t,zz) rhs_aug(t,zz,p1,p2);
 [~,Z] = ode113(ode, [t0 t0+T], z0, opts);
@@ -114,14 +114,14 @@ dz = [fx; fy; dPhi(:)];
 end
 
 function [z, ok] = newton_P(z0, FJ, tol, itmax, c_armijo)
-% Демпфированный Ньютон с бэктрекингом Армихо: FJ(z)-> [F,J], J=DP-I
+% Р”РµРјРїС„РёСЂРѕРІР°РЅРЅС‹Р№ РќСЊСЋС‚РѕРЅ СЃ Р±СЌРєС‚СЂРµРєРёРЅРіРѕРј РђСЂРјРёС…Рѕ: FJ(z)-> [F,J], J=DP-I
 z = z0(:); ok = false; Fnorm_prev = Inf;
 for it = 1:itmax
     [F,J] = FJ(z); Fn = norm(F);
     if Fn < tol, ok = true; return, end
-    % шаг Ньютона
+    % С€Р°Рі РќСЊСЋС‚РѕРЅР°
     try, s = -J\F; catch, s = -(J.'*J + 1e-8*eye(2)) \ (J.'*F); end
-    % бэктрекинг
+    % Р±СЌРєС‚СЂРµРєРёРЅРі
     alpha = 1.0; f0 = Fn;
     while alpha > 1e-6
         ztry = z + alpha*s;
@@ -158,7 +158,7 @@ if isRealPair
     elseif m1>1+tol1 && m2>1+tol1
         typ = 'unstable node';
     else
-        typ = 'parabolic/degenerate (|?|?1)';
+        typ = 'parabolic/degenerate (|О»|в‰€1)';
     end
 else
     if m1<1-tol1, typ='stable focus'; elseif m1>1+tol1, typ='unstable focus'; else, typ='elliptic'; end
